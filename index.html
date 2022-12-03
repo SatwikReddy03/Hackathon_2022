@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Analsysis Data Entry</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="brand"><span>Analysis </span> Data Entry Form</h1>
+    <div class="wrapper">
+      <div class="company-info">
+       
+       
+      </div>
+      <div class="contact">
+        <h3>Email Us</h3>
+        <div class="alert">Your message has been sent</div>
+        <form id="contactForm">
+          <p>
+            <label>Roll_No</label>
+            <input type="number" name="Roll_No" id="Roll_No" required>
+          </p>
+          <p>
+            <label>Q-1</label>
+            <input type="number" name="Q-1" id="Q-1" required>
+          </p>
+          <p>
+            <label>Q-2</label>
+            <input type="number" name="Q-2" id="Q-2" required>
+          </p>
+          <p>
+            <label>Q-3</label>
+            <input type="number" name="Q-3" id="Q-3" required>
+          </p>
+          <p>
+            <label>Q-4</label>
+            <input type="number" name="Q-4" id="Q-4" required>
+          </p>
+          <p>
+            <label>Q-5</label>
+            <input type="number" name="Q-5" id="Q-5" required>
+          </p>
+          <p>
+            <label>Q-6</label>
+            <input type="number" name="Q-6" id="Q-6" required>
+          </p>
+          <p>
+            <label>Q-7</label>
+            <input type="number" name="Q-7" id="Q-7" required>
+          </p>
+          <p>
+            <label>Q-8</label>
+            <input type="number" name="Q-8" id="Q-8" required>
+          </p>
+
+          <p class="full">
+            <button type="submit">Submit</button>
+          </p>
+        </form>
+      </div>
+    </div>
+  
+  </div>
+  <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+  <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+  <script type="module">
+    //import {child, get } from "firebase/database";
+
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyBTD9bn64P4jUEMjw0sKg0N-PDjmOKGOlY",
+    authDomain: "hackathon-bc751.firebaseapp.com",
+    databaseURL: "https://hackathon-bc751-default-rtdb.firebaseio.com",
+    projectId: "hackathon-bc751",
+    storageBucket: "hackathon-bc751.appspot.com",
+    messagingSenderId: "254802825281",
+    appId: "1:254802825281:web:262c22e3b86eca70c2f6c0",
+      
+  
+    };
+  
+  firebase.initializeApp(firebaseConfig);
+  
+  // Reference messages collection
+  var messagesRef = firebase.database().ref('messages');
+  
+  // Listen for form submit
+  document.getElementById('contactForm').addEventListener('submit', submitForm);
+  //ocument.getElementById('contactForm').addEventListener('perform', handleSubmit);
+  
+  // Submit form
+  function submitForm(e){
+    e.preventDefault();
+    // Get values
+    var name = getInputVal('Roll_No');
+    var Q_1 = getInputVal('Q-1');
+    var Q_2= getInputVal('Q-2');
+    var Q_3 = getInputVal('Q-3');
+    var Q_4 = getInputVal('Q-4');
+    var Q_5 = getInputVal('Q-5');
+    var Q_6 = getInputVal('Q-6');
+    var Q_7 = getInputVal('Q-7');
+    var Q_8= getInputVal('Q-8');
+    //var Q_9 = getInputVal('Q-9');
+    // Save message
+    saveMessage(name,Q_1,Q_2,Q_3,Q_4,Q_5,Q_6,Q_7,Q_8);
+  console.log(Q_1,Q_2)
+    // Show alert
+   // document.querySelector('.alert').style.display = 'block';
+    var xValues = ["","Level-1 score","Level-1 Max score","Level-2 score","Level-2 Maxscore","Level-3 score","Level-3 MAxscore",];
+    var l1s=(parseInt(Q_1)+parseInt(Q_2)+parseInt(Q_3)+parseInt(Q_4));
+    //console.log(Q_1,Q_2,l1s)
+    var l2s=(parseInt(Q_5)+parseInt(Q_6));
+    var l3s=(parseInt(Q_7)+parseInt(Q_8));
+   var yValues = [0,l1s,4,l2s,6,l3s,8];
+   var barColors = ["red","red","red", "green","green","blue","blue"];
+
+   new Chart("myChart", {
+  type: "bar",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    legend: {display: false},
+    title: {
+      display: true,
+      text: "Performance"
+    }
+  }
+});
+    // Hide alert after 3 seconds
+    setTimeout(function(){
+      document.querySelector('.alert').style.display = 'none';
+    },3000);
+    // Clear form
+    document.getElementById('contactForm').reset();
+  }
+  
+  // Function to get get form values
+  function getInputVal(id){
+    return document.getElementById(id).value;
+  }
+  
+  // Save message to firebase
+  function saveMessage(name,Q_1,Q_2,Q_3,Q_4,Q_5,Q_6,Q_7,Q_8){
+    var newMessageRef = messagesRef.push();
+    newMessageRef.set({
+      Roll_No: Roll_No,
+      Q_1:Q_1,
+      Q_2:Q_2,
+      Q_3:Q_3,
+      Q_4:Q_4,
+      Q_5:Q_5,
+      Q_6:Q_6,
+      Q_7:Q_7,
+      Q_8:Q_8
+    });
+  }
+  
+  </script>
+</body>
+</html>
